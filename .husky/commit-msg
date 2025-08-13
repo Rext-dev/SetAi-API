@@ -1,5 +1,0 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-echo "[husky] commit-msg: commitlint"
-pnpm commitlint --edit "$1"
