@@ -24,7 +24,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     } else {
       // @ts-expect-error intentionally undefined until enabled
       this.pub = undefined;
-      this.pub = undefined;
+      // @ts-expect-error intentionally undefined until enabled
       this.sub = undefined;
     }
   }
