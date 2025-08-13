@@ -87,7 +87,8 @@ jobs:
           push: true
           tags: |
             ghcr.io/rext-dev/setai-api:latest
-            ghcr.io/rext-dev/setai-api:stable
+            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ github.repository }}:stable
           build-args: |
             GIT_SHA=${{ github.sha }}
 
