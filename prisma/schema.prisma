@@ -1,0 +1,18 @@
+// Prisma schema (MySQL) - only Command model placeholder
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Command {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  enabled     Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+}
