@@ -41,7 +41,7 @@ graph TB
     classDef external fill:#e8f5e8
     
     class API primary
-    class Redis,MySQL storage  
+    class Redis,MySQL storage
     class User,Admin external
 ```
 
