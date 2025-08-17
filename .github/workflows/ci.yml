@@ -3,12 +3,9 @@ name: CI (Build + Test + Docker)
 on:
   push:
     branches: ['main', 'develop', 'feature/*']
-    # Se ejecuta siempre que haya un push a estas ramas
   pull_request:
     branches: ['main', 'develop']
-    # Se ejecuta siempre que haya un PR a estas ramas
   workflow_dispatch:
-    # Permite ejecutar el workflow manualmente desde la UI de GitHub
 
 permissions:
   contents: read
@@ -19,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4

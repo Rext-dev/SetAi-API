@@ -1,4 +1,4 @@
-// Prisma schema (MySQL) - only Command model placeholder
+// Prisma schema (MySQL) - SetAI API data models
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,11 +8,113 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Core command definition
 model Command {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  description String?
-  enabled     Boolean  @default(true)
-  updatedAt   DateTime @updatedAt
-  createdAt   DateTime @default(now())
+  id              String   @id @default(cuid())
+  name            String   @unique
+  description     String?
+  enabled         Boolean  @default(true)
+  serverId        String?  // Optional: server-specific command
+  executionCount  Int      @default(0)
+  lastExecuted    DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  executions      CommandExecution[]
+  
+  @@map("commands")
+}
+
+// Individual command execution tracking
+model CommandExecution {
+  id           String             @id @default(cuid())
+  commandId    String
+  userId       String             // Discord user ID
+  serverId     String             // Discord server ID  
+  channelId    String             // Discord channel ID
+  status       ExecutionStatus    @default(RUNNING)
+  startedAt    DateTime           @default(now())
+  completedAt  DateTime?
+  duration     Int?               // Duration in milliseconds
+  errorMessage String?            @db.Text
+  metadata     Json?              // Additional execution context
+  
+  // Relations
+  command      Command            @relation(fields: [commandId], references: [id], onDelete: Cascade)
+  server       Server?            @relation(fields: [serverId], references: [id])
+  
+  @@map("command_executions")
+  @@index([serverId])
+  @@index([userId])
+  @@index([status])
+  @@index([startedAt])
+}
+
+// Discord server configuration and statistics
+model Server {
+  id               String    @id // Discord server ID
+  name             String
+  description      String?
+  ownerId          String    // Discord user ID of server owner
+  memberCount      Int       @default(0)
+  commandsEnabled  Boolean   @default(true)
+  configuredAt     DateTime  @default(now())
+  lastActivity     DateTime?
+  settings         Json?     // Server-specific bot settings
+  
+  // Relations
+  executions       CommandExecution[]
+  
+  @@map("servers")
+}
+
+// System metrics and health tracking
+model SystemMetric {
+  id          String      @id @default(cuid())
+  type        MetricType
+  value       Float
+  metadata    Json?       // Additional metric context
+  timestamp   DateTime    @default(now())
+  
+  @@map("system_metrics")
+  @@index([type])
+  @@index([timestamp])
+}
+
+// Audit log for important system events
+model AuditLog {
+  id          String     @id @default(cuid())
+  action      String     // Action performed
+  entityType  String     // Type of entity affected
+  entityId    String?    // ID of entity affected
+  userId      String?    // User who performed action
+  metadata    Json?      // Additional context
+  timestamp   DateTime   @default(now())
+  
+  @@map("audit_logs")
+  @@index([action])
+  @@index([entityType])
+  @@index([userId])
+  @@index([timestamp])
+}
+
+// Enums
+enum ExecutionStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum MetricType {
+  BOT_UPTIME
+  ACTIVE_COMMANDS
+  QUEUED_COMMANDS
+  CONNECTED_GUILDS
+  TOTAL_USERS
+  REDIS_LATENCY
+  DATABASE_LATENCY
+  MEMORY_USAGE
+  CPU_USAGE
 }
